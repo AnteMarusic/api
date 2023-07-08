@@ -1,0 +1,14 @@
+# Ignore compiled binaries
+*.o
+#ignore clion libraries
+cmake-build-debug
+.idea
+archivio_test_aperti
+CMakeLists.txt
+#output files
+error.txt
+input.txt
+out.txt
+#apple files
+.DS_Store
+

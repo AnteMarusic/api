@@ -1,0 +1,161 @@
+
+/*
+ * idee:
+ * array di nodi.
+ * ogni nodo rappresenta una stazione.
+ * ogni nodo ha un max heap che contiene le gittate delle macchine
+ * ogni nodo ha il suo numero (che corrisponde alla sua posizione sull'autostrada)
+ *
+ * l'inserimento di una stazione costa O(numero stazioni) perchè nel caso peggiore devo inserire una stazione all'inizio quindi devo ricopiarmi tutto l'array
+ * spostato di uno avanti
+ * la cancellazione di una stazione costa pure O(numero stazioni) perchè nel caso peggiore devo cancellare la prima e quindi devo spostare tutto indietro
+ *
+ * l'inserimento e la cancellazione di una macchina costa O(log(numero macchine)) perchè è il costo dell'inserimento/cancellazione da un heap
+ *
+ * ho due idee per la ricerca
+ * idea 1: algoritmo
+ *
+ *
+ *
+ *
+ * idea 2: matrice:
+ * per ora ho ragionato solo sui cammini che si muovono nel verso dall'inizio alla fine
+ * creo una matrice delle adiacenze del grafo composto dalle stazioni dell'autostrada: la diagonale della matrice è nulla.
+ * le righe partono con un uno dalla sopra diagonale e proseguono con tutti uno fino a che non finisce la linea o incontrano tutti zeri
+ * (questo per come funziona la gittata)
+ * per trovare un cammino minimo controllo sulla colonna della destinazione se è presente un uno sulla riga della partenza. se sì win
+ * se no cerco il primo uno della diagonale (per rispettare il vincolo di ordinamento delle soluzioni (vedi specifiche))
+ * a quel punto vado alla colonna corrispondente alla riga dove ho trovato l'uno e ripeto l'operazione fino a che trovo un uno nella riga della partenza.
+ * quello trovato non è necessariamente il cammino minimo, dovrei riprovare per ognuno degli uno
+ *
+ *
+ * idea 3: topological sorting in a directed acyclical same weighted graph (idea presa da internet)
+ * le stazioni sono in ordine topologico
+ * (1) troviamo se ci sono la stazione di partenza e la stazione di arrivo O(log(numero di stazioni)) con max_heap_search binaria
+ * (2) creo due array di lunghezza indice stazione di arrivo - indice stazione di partenza (alla peggio complessità spaziale O(numero di stazioni)) e inizializzo tutto a infinito
+ * (3) parto dalla stazione di partenza e controllo se posso arrivare alla stazione in posizione partenza + 1. se è dentro la gittata allora posso e quindi aggiorno i costi
+ *      e il precedente per arrivare a quella stazione. Procedo per tutte le stazioni raggiungibili dalla stazione in questione. Una volta completata la passata passo alla stazione successiva e ripeto
+ *      costo temporale O(numero di stazioni + numero di stazioni raggiungibili)
+ *
+ *
+ *
+ * PSEUDOCODICE
+ * @requires that partenza e arrivo esistano
+ * int* autostrada_pianifica_percorso (int partenza, int arrivo, nodo *nodi) {
+ *      int i = 0;
+ *      int j = i + 1;
+ *      int gittata;
+ *      int *risultato;
+ *      int risultato_dim;
+ *      int prec;
+ *      int prec_indice;
+ *      int *costi = int_array_create(costi, arrivo - partenza);
+ *      int *precedenti = int_array_create(precedenti, arrivo - partenza);
+ *      inizializza_array_costi (costi);
+ *      inizializza_array_precedenti (precedenti);
+ *      while (i < arrivo - partenza) {
+ *          while (nodi[partenza + i + j].posizione <= nodi[partenza + i]) { //controllo del while non necessario, tanto faccio break appena possibile
+ *             gittata = nodo_massima_gittata(nodi[partenza]);
+ *             if(costi[i] + 1 < costi [i + j]) {
+ *                         costi[i + j] =  costi[i] + 1;
+ *                         precedenti[i + j] = nodi[partenza + i].posizione;
+ *                  }
+ *             j ++;
+ *          }
+ *          i++;
+ *      }
+ *
+ *      //caso in cui non esiste un percorso
+ *      if (i == o || j == 1) {
+ *              return null;
+ *      }
+ *
+ *      //back tracking
+ *      risultato_dim = costi[arrivo - partenza - 1];
+ *      i = 0;
+ *      risultato = int_array_create (risultato, risultato_dim);
+ *      prec = precedenti[arrivo - partenza - 1]
+ *
+ *      while (i < risultato_dim) {
+ *          risultato[risultato_dim - i] = prec;
+ *          prec_indice = binary_search(nodi, partenza, arrivo, prec);  //attenzione agli shift di posizione
+ *          prec = precedenti [prec_indice];
+ *      }
+ *      return risultato;
+ * }
+ *
+ *
+ *
+ * array di nodi
+ */
+
+/*
+ * algoritmo di ricerca
+ * caso andando avanti
+ * se esistono più di un cammino di numero di passi uguale a quello indicato allora il metodo ritorna quello che rispetta le specifiche nelle slides
+ *
+ * ritorna l'array dei nodi che compongono la visita ordinati da quello di partenza fino a quello di arrivo. null se questo array non esiste
+ *
+ *
+ * parametri : nodo di partenza
+ * nodo di arrivo
+ * numero di passi.
+ *
+ * l'algo viene chiamato con un numero di passi x dopo averlo chiamato con un numero di passi x - 1 quindi non dovrebbe controllare quel caso
+ *
+ *      if (numero di passi == 1) {
+ *          if ( nodo di partenza + gittata > nodo di arrivo) {
+ *                  return [nodo partenza, nodo arrivo]
+ *          }
+ *          else {
+ *                  return null;
+ *          }
+ *      }
+ *
+ *
+ * else {
+ *      if (nodo di partenza + 1 == nodo di arrivo) {
+ *              return null;
+ *      }
+ *      else {
+ *          array temp = ricerca(nodo di partenza + 1, nodo di arrivo, passi - 1);
+ *          if (temp == null) {
+ *                  if (nodo di partenza + 2 != nodo di arrivo) {
+ *                          array temp = ricerca(nodo di partenza + 2, nodo di arrivo, passi - 1);
+ *                  }
+ *          }
+ *          else {
+ *                  return [nodo di partenza + temp];
+ *          }
+ *      }
+ *
+ * }
+ *
+ * @requires che partenza e arrivo esistano e corrispondano alla partenza e all'arrivo che intende l'input
+ * @return l'array di interi dove ogni intero rappresenta il numero della stazione che costituiscono il percorso. in prima posizione c'è la partenza, in ultima l'arrivo
+ * oppure null se non esiste un cammino
+ * camminoMinimo (int partenza, int arrivo) {
+ *      int i = -1;  //lo faccio partire da meno uno così se non ci sono stazioni tra l'inizio e la fine (maxInterazioni == 0) viene comunque fatta un'iterazione
+ *      //del while in cui controllo se esiste il cammino diretto
+ *
+ *      int *temp;
+ *      int maxIterazioni = numeroDiStazioniTra (partenza, arrivo);
+ *      while (i < maxIterazioni) {
+ *              //posso aggiungere ulteriori controlli, ad esempio se cerco un cammino di lunghezza due e nel cercarlo arrivo al nodo esattamente prima dell'arrivo e non ho
+ *              //ancora trovato un cammino e non trovo neanche un cammino passando dall'ultimo nodo allora significa che non esistono cammini.
+ *
+ *              //lo stesso vale per un qualsiasi cammino. se arrivo a controllare il penultimo nodo e non ho ancora trovato un cammino allora non esiste un cammino anche se aumento il numero
+ *              //di passi disponibili
+ *             temp = max_heap_search (partenza, arrivo, i);
+ *             if (temp != null) {
+ *                  //ps si fa così a controllare che un puntatore punti a null?
+ *                  break;
+ *             }
+ *      }
+ *      return temp;
+ *
+ * }
+ *
+ *
+
+ */
