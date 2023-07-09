@@ -4,10 +4,7 @@
 
 #ifndef API_MAXHEAP_H
 #define API_MAXHEAP_H
-enum boolean {
-    false,
-    true
-};
+#include "utility.h"
 
 struct Heap {
     int *array;

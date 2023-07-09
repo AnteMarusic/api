@@ -28,6 +28,7 @@ int main() {
             //autostrada_stazione_create_and_insert(&autostrada, posizione_stazione);
             if (autostrada_contains(&autostrada, posizione_stazione)) {
                 printf("non aggiunta\n");
+                fflush(stdout);
             }
             else {
                 struct Stazione* stazione = stazione_create(posizione_stazione);
@@ -51,10 +52,12 @@ int main() {
             fprintf(stderr, "posizione stazione da demolire: %d\n", posizione_stazione);
             if (autostrada_stazione_elimina_stazione(&autostrada, posizione_stazione)) {
                 printf("demolita\n");
+                fflush(stdout);
                 autostrada_print(&autostrada);
             }
             else {
                 printf("non demolita\n");
+                fflush(stdout);
             }
             fprintf(stderr, "\n");
         }
@@ -68,10 +71,12 @@ int main() {
             fprintf(stderr, "gittata macchina da inserire: %d\n", gittata);
             if (autostrada_stazione_aggiungi_auto(&autostrada, posizione_stazione, gittata)) {
                 printf ("aggiunta\n");
+                fflush(stdout);
                 autostrada_print(&autostrada);
             }
             else {
                 printf ("non aggiunta\n");
+                fflush(stdout);
             }
             fprintf(stderr, "\n");
         }
@@ -86,14 +91,17 @@ int main() {
             if (autostrada_contains(&autostrada, posizione_stazione)) {
                 if (autostrada_stazione_elimina_auto(&autostrada, posizione_stazione, gittata)) {
                     printf ("rottamata\n");
+                    fflush(stdout);
                     autostrada_print(&autostrada);
                 }
                 else {
                     printf ("non rottamata\n");
+                    fflush(stdout);
                 }
             }
             else {
                 printf ("non rottamata\n");
+                fflush(stdout);
             }
             fprintf(stderr, "\n");
         }
@@ -108,10 +116,13 @@ int main() {
             struct Percorso *percorso;
             percorso = autostrada_pianifica_percorso(&autostrada, posizione_stazione, posizione_stazione_arrivo);
             percorso_stampa_percorso(percorso);
+            printf("\n");
+            fflush(stdout);
             fprintf(stderr, "\n");
         }
         else {
             printf("Comando sconosciuto\n");
+            fflush(stdout);
         }
     }
 

@@ -5,6 +5,7 @@
 #ifndef API_AUTOSTRADA_H
 #define API_AUTOSTRADA_H
 #include "maxHeap.h"
+#include "utility.h"
 struct Stazione {
     struct Heap *heap;
     int posizione;
