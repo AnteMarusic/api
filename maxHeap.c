@@ -187,10 +187,10 @@ enum boolean max_heap_insert (struct Heap *this, int el) {
  */
 void max_heap_print_array (struct Heap *this) {
     if (this->heap_dim == 0) {
-        fprintf (stderr, "vuoto");
+        SHOW("vuoto");
     }
     for (int i = 0; i < this->heap_dim; i++) {
-        fprintf(stderr, "%d ", this->array[i]);
+        SHOW("%d ", this->array[i]);
     }
 }
 

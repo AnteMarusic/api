@@ -4,7 +4,7 @@
 
 #ifndef API_UTILITY_H
 #define API_UTILITY_H
-#define DEBUG
+#undef DEBUG
 
 #ifdef DEBUG
 #define SHOW printf

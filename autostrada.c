@@ -99,9 +99,9 @@ int autostrada_binary_search (struct Autostrada *this, int element) {
 
 void autostrada_print (struct Autostrada *this) {
     for (int i = 0; i < this->numero_stazioni; i++) {
-        fprintf(stderr, "stazione %d: %d, range: %d, auto: ", i, this->stazioni[i].posizione, max_heap_get_max(this->stazioni[i].heap));
+        SHOW("stazione %d: %d, range: %d, auto: ", i, this->stazioni[i].posizione, max_heap_get_max(this->stazioni[i].heap));
         max_heap_print_array(this->stazioni[i].heap);
-        printf("\n");
+        SHOW("\n");
     }
 }
 
@@ -138,18 +138,18 @@ int autostrada_stazione_get_gittata (struct Autostrada *this, int indice) {
 struct Percorso* autostrada_pianifica_percorso (struct Autostrada *this, int geoPartenza, int geoArrivo) {
     int *ranges = malloc(sizeof(int) * this->numero_stazioni);
     int *posizioni = malloc(sizeof(int) * this->numero_stazioni);
-    printf("numero stazioni: %d\n", this->numero_stazioni);
+    SHOW("numero stazioni: %d\n", this->numero_stazioni);
     struct Percorso *temp;
     for (int i = 0; i < this->numero_stazioni; i ++) {
         ranges[i] = autostrada_stazione_get_gittata(this, i);
         posizioni[i] = this->stazioni[i].posizione;
     }
-    fprintf(stderr, "posizioni: ");
+    SHOW("posizioni: ");
     stampa_array(posizioni, this->numero_stazioni);
-    fprintf(stderr, "\n");
-    fprintf(stderr, "ranges: ");
+    SHOW("\n");
+    SHOW("ranges: ");
     stampa_array(ranges, this->numero_stazioni);
-    fprintf(stderr, "\n");
+    SHOW("\n");
     temp = calcola_percorso_test (posizioni, this->numero_stazioni, ranges, geoPartenza, geoArrivo);
     free(ranges);
     free(posizioni);
@@ -158,9 +158,8 @@ struct Percorso* autostrada_pianifica_percorso (struct Autostrada *this, int geo
 
 void percorso_stampa_percorso (struct Percorso *percorso) {
     int i;
-    printf ("Percorso: ");
     if (percorso == NULL || percorso->dim == 0) {
-        printf("NULL\n");
+        printf("nessun percorso");
     }
     else {
         for (i = 0; i < percorso->dim; i++) {
@@ -219,7 +218,7 @@ int general_binary_search (int *posizioni, int dim, int element) {
 
 void stampa_array (int *array, int dim) {
     for (int i = 0; i < dim; i++) {
-        fprintf(stderr, "%d ", array[i]);
+        SHOW("%d ", array[i]);
     }
 }
 
@@ -276,11 +275,11 @@ struct Percorso* calcola_percorso_avanti (int *posizioni, int posizioni_dim, int
         precedente[i] = -1;
     }
     costi[0] = 0;
-    fprintf(stderr, "costi: ");
+    SHOW("costi: ");
     stampa_array(costi, precedente_dim);
-    fprintf(stderr, "\nprecedente: ");
+    SHOW("\nprecedente: ");
     stampa_array(precedente, precedente_dim);
-    fprintf(stderr, "\n");
+    SHOW("\n");
     //compilazione degli array di costi e precedenti
 
     for (i = index_partenza; i < index_arrivo; i++) {
@@ -293,21 +292,21 @@ struct Percorso* calcola_percorso_avanti (int *posizioni, int posizioni_dim, int
         }
         flag = false;
          */
-        fprintf(stderr, "i: %d\n", i); //debug
+        SHOW("i: %d\n", i); //debug
         range = ranges[i]; //prendo il range corrente
         j = i + 1; //j scorre tutti i successivi
         while (j <= index_arrivo && posizioni[j] <= posizioni[i] + range) {
-            fprintf(stderr, "j: %d\n", j);
+            SHOW("j: %d\n", j);
             if (costi[j - index_partenza] > costi[i - index_partenza] + 1) { // se il costo è uguale non sostituisco (previlegio la stazione che viene prima in ordine)
                 costi[j - index_partenza] = costi[i - index_partenza] + 1;
                 precedente[j - index_partenza] = i;
-                fprintf(stderr, "costi: ");
+                SHOW("costi: ");
                 stampa_array(costi, precedente_dim);
-                fprintf(stderr, "\n precedente: ");
+                SHOW("\n precedente: ");
                 stampa_array(precedente, precedente_dim);
                 //flag = true;
             } else {
-                fprintf(stderr, "non aggiorno il costo \n");
+                SHOW("non aggiorno il costo \n");
             }
             j++;
         }
@@ -351,32 +350,32 @@ struct Percorso* calcola_percorso_indietro (int *posizioni, int posizioni_dim, i
         precedente[i] = -1;
     }
     costi[precedente_dim - 1] = 0;
-    fprintf(stderr, "costi: ");
+    SHOW("costi: ");
     stampa_array(costi, precedente_dim);
-    fprintf(stderr, "\nprecedente: ");
+    SHOW("\nprecedente: ");
     stampa_array(precedente, precedente_dim);
-    fprintf(stderr, "\n");
+    SHOW("\n");
     //compilazione degli array di costi e precedenti
     for (i = index_partenza; i > index_arrivo; i--) {
         if (costi[i-index_arrivo] == INFINITE) {
             return NULL;
         }
-        fprintf(stderr, "i: %d\n", i);
+        SHOW("i: %d\n", i);
         range = ranges[i];
         j = i - 1;
         while (j >= index_arrivo && posizioni[j] >= posizioni[i] - range) {
-            fprintf(stderr, "j: %d\n", j);
+            SHOW("j: %d\n", j);
             if (costi[j - index_arrivo] >= costi[i - index_arrivo] + 1) { //se il costo è uguale sostituisco (previlegio la stazione che viene prima in ordine crescente)
                 costi[j - index_arrivo] = costi[i - index_arrivo] + 1;
                 precedente[j - index_arrivo] = i;
-                fprintf(stderr, "costi: ");
+                SHOW("costi: ");
                 stampa_array(costi, precedente_dim);
-                fprintf(stderr, "\nprecedente: ");
+                SHOW("\nprecedente: ");
                 stampa_array(precedente, precedente_dim);
-                fprintf(stderr, "\n");
+                SHOW("\n");
             }
             else {
-                fprintf (stderr, "costo peggiore\n");
+                SHOW("costo peggiore\n");
             }
             j--;
         }
